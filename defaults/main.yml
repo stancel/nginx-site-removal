@@ -1,0 +1,7 @@
+---
+# defaults file for nginx-site-removal
+
+# The document root for the webserver
+nginx_site_removal_web_home: "/var/www"
+
+
