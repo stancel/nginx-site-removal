@@ -4,8 +4,9 @@
 - name: "Remove Nginx configuration sites-enabled symlink for {{ item.name }}"
   file: 
     state: absent
-    path: /etc/nginx/sites-enabled/{{ item.name }}
+    path: /etc/nginx/conf.d/{{ item.name }}.conf
   with_items: '{{ nginx_site_removal_sites_to_remove }}'
+  notify: "restart nginx"
 
 - name: "Remove Certbot SSL files for {{ item.name }}"
   file: 
@@ -38,12 +39,12 @@
     path: "{{ item.path }}"
   with_items: "{{ files_to_delete.results[0].files }}"
 
-- name: "Remove sites-available Nginx configuration for {{ item.name }}"
-  file: 
-    state: absent
-    path: /etc/nginx/sites-available/{{ item.name }} 
-  with_items: '{{ nginx_site_removal_sites_to_remove }}'
-  notify: "restart nginx"
+#- name: "Remove sites-available Nginx configuration for {{ item.name }}"
+#  file: 
+#    state: absent
+#    path: /etc/nginx/sites-available/{{ item.name }} 
+#  with_items: '{{ nginx_site_removal_sites_to_remove }}'
+#  notify: "restart nginx"
 
 - name: "Remove directories {{ nginx_site_removal_web_home }}/{{ item.name }} for site {{ item.url }}"
   file: 
