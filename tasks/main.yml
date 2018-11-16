@@ -1,28 +1,35 @@
 ---
 # tasks file for nginx-site-removal
 
-- name: "Remove Nginx configuration sites-enabled symlink for {{ item.name }}"
+- name: "Remove Nginx site configs"
   file: 
     state: absent
     path: /etc/nginx/conf.d/{{ item.name }}.conf
   with_items: '{{ nginx_site_removal_sites_to_remove }}'
   notify: "restart nginx"
 
-- name: "Remove Certbot SSL files for {{ item.name }}"
+- name: "Remove Certbot SSL live files"
   file: 
     state: absent
     path: /etc/letsencrypt/live/{{ item.url }}
   with_items: '{{ nginx_site_removal_sites_to_remove }}'
   ignore_errors: yes
 
-- name: "Remove Certbot SSL renewal files for {{ item.name }}"
+- name: "Remove Certbot SSL renewal files"
   file: 
     state: absent
     path: /etc/letsencrypt/renewal/{{ item.url }}.conf
   with_items: '{{ nginx_site_removal_sites_to_remove }}'
   ignore_errors: yes
 
-- name: "Find all Nginx logs for {{ item.name }}"
+- name: "Remove Certbot SSL archive files"
+  file: 
+    state: absent
+    path: /etc/letsencrypt/archive/{{ item.url }}
+  with_items: '{{ nginx_site_removal_sites_to_remove }}'
+  ignore_errors: yes
+
+- name: "Find all Nginx logs"
   find:
     paths: /var/log/nginx
     patterns: "{{ item.name }}.*"
@@ -33,7 +40,7 @@
 #  debug:
 #    var: files_to_delete
 
-- name: "Remove Nginx log - {{ item.path }}"
+- name: "Remove Nginx logs"
   file: 
     state: absent
     path: "{{ item.path }}"
@@ -46,7 +53,7 @@
 #  with_items: '{{ nginx_site_removal_sites_to_remove }}'
 #  notify: "restart nginx"
 
-- name: "Remove directories {{ nginx_site_removal_web_home }}/{{ item.name }} for site {{ item.url }}"
+- name: "Remove site directories under webserver document root"
   file: 
     state: absent
     path: "{{ nginx_site_removal_web_home }}/{{ item.name }}" 
